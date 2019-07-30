@@ -1,0 +1,24 @@
+{% extends 'main.html' %}
+
+
+{% block body %}
+    <h1>{{ user }}</h1>
+    <h1>Comments</h1>
+    {% for comment in comments %}
+        {{ comment.username }}
+        says
+        {{ comment.content }}
+        <form action="http://localhost:8000/someapp/deletecomment/" method="post">
+            {% csrf_token %}
+            <input name="comment_id" value="{{ comment.pk }}" hidden>
+            <button   type="submit">Delete</button>
+        </form>
+
+        <br/>
+    {% endfor %}
+
+
+
+<a href="{% url 'logout' %}">Logout</a>
+
+{% endblock %}
