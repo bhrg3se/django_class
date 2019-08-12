@@ -4,13 +4,30 @@ from someapp import models
 from someapp import forms
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login,authenticate
-
+from django.contrib.auth.forms import UserCreationForm
+from django.views import View
+from django.views.generic import TemplateView
 
 
 # Create your views here.
 
-def index(request):
-    return render(request,'someapp/some_form.html')
+def index(req):
+    if(req.method=="GET"):
+        f=UserCreationForm()
+        d={
+            "form":f
+        }
+        return render(req,'someapp/login.html',d)
+    else:
+        f=UserCreationForm(req.POST)
+        if(f.is_valid()):
+            f.save()
+            username=f.cleaned_data.get("username")
+            password=f.cleaned_data.get("password")
+            user=authenticate(username,password)
+            if(user):
+                login(req,user)
+
 
 def add(request):
     print(request.POST)
@@ -19,8 +36,10 @@ def add(request):
     b=request.POST.get("b")
     return HttpResponse(int(a)+int(b))
 
-def profile(request):
-    name=request.GET.get("name")
+
+@login_required(login_url="auth/login")
+def profile(request,name):
+    #name=request.GET.get("name")
     skills=["Java","python","golang","javascript"]
     d={"name":name,"skills":skills}
     return render(request,'someapp/index.html',d)
@@ -99,6 +118,10 @@ def someform(req):
         f=forms.CommentForm(req.POST)
         if(f.is_valid()):
             f.save()
-            return HttpResponse("success")
+            return HttpResponse("success "+str(req.user))
         else:
-            return HttpResponse("Failed")
+            return HttpResponse("Failed "+str(f.errors))
+
+
+
+

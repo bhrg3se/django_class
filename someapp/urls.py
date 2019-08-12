@@ -5,7 +5,7 @@ from someapp import consumers
 
 urlpatterns = [
     path('index/',views.index),
-    path('profile/',views.profile),
+    path('profile/<str:name>/',views.profile),
     path('add/',views.add),
     path('submit/',views.submit),
     path('addcomment/',views.addComment),
